@@ -1,0 +1,190 @@
+{% extends 'layout.html' %}
+{% load filters %}
+{% block title %}Excel sheet app{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <!-- script button -->
+  <div class="row">
+    <div class="mx-auto my-4">
+      <a class="btn btn-warning m-2" onclick="script1()">Script 1</a>
+      <a class="btn btn-warning m-2" onclick="script1()">Script 2</a>
+      <a class="btn btn-warning m-2" onclick="script1()">Script 3</a>
+      <a class="btn btn-warning m-2" onclick="script1()">Script 4</a>
+      <a class="btn btn-warning m-2" href="edit">Edit</a>
+      <a class="btn btn-warning m-2" onclick="clean()">Clear</a>
+    </div>
+  </div>
+
+  <!-- change size of locations -->
+  <div class="row">
+    <div class="mx-auto">
+      <select id="location_size" aria-label="Default select example">
+        <option selected>Select Location Size</option>
+        <option>1/4 X</option>
+        <option>1/2 X</option>
+        <option>1 X</option>
+        <option>2 X</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- locations table -->
+  <div class="row mx-auto my-4 p-4 border border-warning rounded">
+    {% for col in 8|times %}
+      {% if forloop.counter|divisibleby:2 %}
+        <div style="display: grid;">
+        {% for row in 14|times %}
+        <a id="{{ m_id col row }}" class="location border border-warning rounded" style="width: 70px; height: 30px;"></a>
+        {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <div class="list-group mx-auto" style="flex-direction: row;">
+        <div style="display: grid;">
+        {% for row in 14|times %}
+        <a id="as" class="location border border-warning rounded" style="width: 70px; height: 30px;"></a>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <!-- Script result part -->
+  <div class="row" id="script_result">
+    <div class="row mx-auto my-4">
+      <form action="out_as_xml" method="post">
+        {% csrf_token %}
+        <div class="row">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">Check</th>
+                <th scope="col">Type</th>
+                <th scope="col">Color</th>
+                <th scope="col">Counts</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th><input type="checkbox" value="x" name="chk_x"></th>
+                <td>X</td>
+                <td style="background-color: #ffff00;"></td>
+                <td id="x_counts"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" value="y" name="chk_y"></th>
+                <td>Y</td>
+                <td style="background-color: #00b050;"></td>
+                <td id="y_counts"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" value="z" name="chk_z"></th>
+                <td>Z</td>
+                <td style="background-color: #fce4d6;"></td>
+                <td id="z_counts"></td>
+              </tr>
+            </tbody>
+          </table>
+          <input type="submit" class="btn btn-primary mx-auto" value="Print">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+
+  // initial width and height
+  var w, h;
+  // clean coloring and script result
+  function clean() {
+    document.getElementById("script_result").style.visibility = "hidden";
+    {% for col in locations %}
+      {% for key, value in col.items %}
+        document.getElementById("{{key}}").style.backgroundColor = "#ffffff";
+      {% endfor %}
+    {% endfor %}
+  }
+
+  // display result1 result and coloring
+  function script1() {
+    var x_counts = 0;
+    var y_counts = 0;
+    var z_counts = 0;
+    // coloring
+    {% for col in locations %}
+      {% for key, value in col.items %}
+        {% if value == "X" %}
+          document.getElementById("{{key}}").style.backgroundColor = "#ffff00";
+          x_counts = x_counts + 1;
+        {% endif %}
+        {% if value == "Y" %}
+          document.getElementById("{{key}}").style.backgroundColor = "#00b050";
+          y_counts = y_counts + 1;
+        {% endif %}
+        {% if value == "Z" %}
+          document.getElementById("{{key}}").style.backgroundColor = "#fce4d6";
+          z_counts = z_counts + 1;
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    // display script result
+    document.getElementById("script_result").style.visibility = "visible";
+    document.getElementById("x_counts").innerHTML = x_counts;
+    document.getElementById("y_counts").innerHTML = y_counts;
+    document.getElementById("z_counts").innerHTML = z_counts;
+  }
+  function init() {
+    // initialize
+    var element = document.getElementById("loc101");
+    let computedStyle = getComputedStyle(element);
+    w = computedStyle.width;
+    h = computedStyle.height;
+    document.getElementById("script_result").style.visibility = "hidden";
+
+    {% for col in locations %}
+      {% for key, value in col.items %}
+        document.getElementById("{{key}}").style.backgroundColor = "#ffff00";
+      {% endfor %}
+    {% endfor %}
+  }
+</script>
+<script type="text/javascript">
+  var selectElem = document.getElementById('location_size')
+  var pElem = document.getElementById('demo')
+
+  // When a new <option> is selected
+  selectElem.addEventListener('change', function() {
+    var index = selectElem.selectedIndex;
+    // call function transform
+    transform(index);
+  })
+  // location size change function
+  function transform(i) {
+    {% for col in locations %}
+      {% for key, value in col.items %}
+        switch (i) {
+          case 1:
+            document.getElementById("{{key}}").style.width = "18px";
+            document.getElementById("{{key}}").style.height = "8px";
+            document.getElementById("{{key}}").style.fontSize = "5px";
+            break;
+          case 2:
+            document.getElementById("{{key}}").style.width = "35px";
+            document.getElementById("{{key}}").style.height = "15px";
+            document.getElementById("{{key}}").style.fontSize = "xx-small";
+            break;
+          case 3:
+            document.getElementById("{{key}}").style.width = "70px";
+            document.getElementById("{{key}}").style.height = "30px";
+            document.getElementById("{{key}}").style.fontSize = "medium";
+            break;
+          case 4:
+            document.getElementById("{{key}}").style.width = "140px";
+            document.getElementById("{{key}}").style.height = "60px";
+            document.getElementById("{{key}}").style.fontSize = "xx-large";
+            break;
+        }
+      {% endfor %}
+    {% endfor %}
+  }
+</script>
+{% endblock %}

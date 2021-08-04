@@ -1,0 +1,21 @@
+<!-- locations table -->
+  <div class="row mx-auto my-4 p-4 border border-warning rounded">
+    {% for col in locations %}
+      {% if forloop.counter|divisibleby:2 %}
+        <div style="display: grid;">
+        {% for cell in col %}
+        <a id="{{ cell }}" class="location border border-warning rounded" style="width: 70px; height: 30px;">{{cell}}</a>
+        {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <div class="list-group mx-auto" style="flex-direction: row;">
+        <div style="display: grid;">
+        {% for cell in col %}
+        <a id="{{ cell }}" class="location border border-warning rounded" style="width: 70px; height: 30px;">{{cell}}</a>
+        {% endfor %}
+        </div>
+        
+      {% endif %}
+    {% endfor %}
+  </div>

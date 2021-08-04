@@ -1,0 +1,55 @@
+{% extends 'layout.html' %}
+{% block title %}Excel sheet app{% endblock %}
+{% block content %}
+<div class="main">
+  <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="/">Home</a>
+    </nav>
+  </div>
+  <div class="container">
+    <div class="row"></div>
+    <div class="row">
+      <div class="col-md-6">
+        <form method="post" action="add">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" class="form-control" name="location" placeholder="input location name">
+          </div>
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select class="form-control" id="category" name="category">
+              <option>X</option>
+              <option>Y</option>
+              <option>Z</option>
+            </select>
+          </div>
+          <input type="submit" name="add" value="Add & Update" class="btn btn-primary mb-2">
+        </form>
+      </div>
+      <div class="col-md-6">
+        <form method="post" action="remove">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="select_location">Select location to delete</label>
+            <select multiple class="form-control" id="select_location" name="location">
+            {% for col in locations %}
+              {% for key, value in col.items %}
+              <option>{{ key }}</option>
+              {% endfor %}
+            {% endfor %}
+            </select>
+          </div>
+          <input type="submit" class="btn btn-primary mb-2" value ="Remove">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  function init() {
+    // body...
+  }
+</script>
+{% endblock %}
